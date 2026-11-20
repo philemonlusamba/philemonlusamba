@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conseil — ChatGPT × Claude × Gemini</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2330;
+    --border: #2a3441;
+    --text: #e6edf3;
+    --muted: #9aa7b4;
+    --accent: #4493f8;
+    --ok: #3fb950;
+    --err: #f85149;
+    --warn: #d29922;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  header {
+    padding: 24px 20px 12px; max-width: 1080px; margin: 0 auto;
+  }
+  h1 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.2px; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip {
+    font-size: 12px; padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); background: var(--panel);
+  }
+  .chip.ready { color: var(--ok); border-color: #1f6f36; }
+  main { max-width: 1080px; margin: 0 auto; padding: 8px 20px 64px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px;
+  }
+  textarea {
+    width: 100%; min-height: 92px; resize: vertical; padding: 12px;
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    font: inherit; font-size: 15px;
+  }
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  button {
+    background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+    padding: 10px 18px; font: inherit; font-weight: 600; cursor: pointer;
+  }
+  button:disabled { opacity: .55; cursor: progress; }
+  button.ghost {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); font-weight: 500;
+  }
+  select, label {
+    font: inherit; font-size: 14px; color: var(--muted);
+  }
+  select {
+    background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+  }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 18px; }
+  .member { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .member h3 { margin: 0 0 4px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+  .tag.sim { color: var(--warn); border-color: #6b5518; }
+  .tag.real { color: var(--ok); border-color: #1f6f36; }
+  .member p { margin: 8px 0 0; font-size: 13.5px; color: #cfd8e3; white-space: pre-wrap; }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+  .judge { margin-top: 18px; }
+  .judge h2 { font-size: 17px; margin: 0 0 10px; }
+  .judge h3 { font-size: 14px; color: var(--accent); margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .4px; }
+  .judge ul { margin: 6px 0; padding-left: 20px; }
+  .judge li { margin: 3px 0; }
+  .judge strong { color: #fff; }
+  .alert {
+    margin-top: 16px; padding: 10px 14px; border-radius: 10px; font-size: 14px;
+    border: 1px solid #6b1f1f; background: #2a1416; color: #ffb3ae;
+  }
+  .alert.info { border-color: #1f4b6b; background: #10212c; color: #a9d6f5; }
+  .spinner {
+    width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.35);
+    border-top-color: #fff; border-radius: 50%;
+    display: inline-block; margin-right: 8px; animation: spin .8s linear infinite;
+    vertical-align: -3px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  footer { max-width: 1080px; margin: 0 auto; padding: 0 20px 40px; color: var(--muted); font-size: 12.5px; }
+  code { background: var(--panel-2); padding: 1px 5px; border-radius: 5px; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Conseil — ChatGPT × Claude × Gemini</h1>
+  <p class="sub">
+    Trois IA répondent séparément, se critiquent sur des réponses anonymisées, puis un juge
+    produit la synthèse. Sans clé API, tout tourne en simulation locale.
+  </p>
+  <div class="chips" id="chips"></div>
+</header>
+
+<main>
+  <form class="card" id="form">
+    <textarea id="question" placeholder="Ex. : Faut-il un index SQL ou une recherche plein texte pour 50 000 documents ?" required></textarea>
+    <div class="row">
+      <label for="rounds">Tours</label>
+      <select id="rounds">
+        <option value="2" selected>2 — propositions + critique croisée</option>
+        <option value="1">1 — propositions + juge</option>
+      </select>
+      <button type="submit" id="submit">Lancer le conseil</button>
+      <button type="button" class="ghost" id="example">Exemple</button>
+      <span class="sub" id="status"></span>
+    </div>
+  </form>
+
+  <div id="alerts"></div>
+  <div class="grid" id="members"></div>
+  <div class="card judge" id="judge" hidden></div>
+</main>
+
+<footer>
+  Moteur : <code>agents.council</code> · Serveur : bibliothèque standard Python ·
+  Aucune donnée n'est envoyée ailleurs qu'aux API que vous configurez.
+</footer>
+
+<script>
+const $ = (selector) => document.querySelector(selector);
+const escapeHtml = (value) => value.replace(/[&<>"']/g, (char) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+
+function renderMarkdown(text) {
+  const lines = escapeHtml(text).split("\n");
+  const out = [];
+  let inList = false;
+  const closeList = () => { if (inList) { out.push("</ul>"); inList = false; } };
+  const inline = (line) => line
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+  for (const line of lines) {
+    const heading = line.match(/^(#{2,3})\s+(.*)$/);
+    if (heading) {
+      closeList();
+      out.push(`<h3>${inline(heading[2])}</h3>`);
+      continue;
+    }
+    const bullet = line.match(/^\s*[-*]\s+(.*)$/);
+    if (bullet) {
+      if (!inList) { out.push("<ul>"); inList = true; }
+      out.push(`<li>${inline(bullet[1])}</li>`);
+      continue;
+    }
+    closeList();
+    if (line.trim()) out.push(`<p>${inline(line)}</p>`);
+  }
+  closeList();
+  return out.join("\n");
+}
+
+function setStatus(html) { $("#status").innerHTML = html; }
+
+function alert(message, kind = "error") {
+  const box = document.createElement("div");
+  box.className = kind === "info" ? "alert info" : "alert";
+  box.textContent = message;
+  $("#alerts").appendChild(box);
+  setTimeout(() => box.remove(), 9000);
+}
+
+async function loadProviders() {
+  try {
+    const response = await fetch("/api/health");
+    const data = await response.json();
+    const chips = data.providers.map((provider) => {
+      const label = provider.ready ? `${provider.name} · ${provider.model}` : `${provider.name} · simulation`;
+      return `<span class="chip ${provider.ready ? "ready" : ""}">${escapeHtml(label)}</span>`;
+    });
+    $("#chips").innerHTML = chips.join("");
+  } catch (error) {
+    $("#chips").innerHTML = '<span class="chip">serveur injoignable</span>';
+  }
+}
+
+function renderMembers(contributions) {
+  const latest = new Map();
+  for (const item of contributions) {
+    if (!item.ok) continue;
+    const current = latest.get(item.label);
+    if (!current || item.round > current.round) latest.set(item.label, item);
+  }
+  const cards = [];
+  for (const [label, item] of latest) {
+    const tag = item.simulated
+      ? '<span class="tag sim">simulé</span>'
+      : '<span class="tag real">réel</span>';
+    cards.push(`
+      <div class="member">
+        <h3>${escapeHtml(label)} ${tag}</h3>
+        <p>${escapeHtml(item.text)}</p>
+        <div class="meta">tour ${item.round} · ${Math.round(item.duration_ms)} ms</div>
+      </div>`);
+  }
+  const failures = contributions.filter((item) => !item.ok);
+  if (failures.length) {
+    const names = [...new Set(failures.map((item) => item.label))].join(", ");
+    cards.push(`<div class="member"><h3>Échecs</h3><p>${escapeHtml(names)}</p></div>`);
+  }
+  $("#members").innerHTML = cards.join("");
+}
+
+async function run(event) {
+  event.preventDefault();
+  const question = $("#question").value.trim();
+  if (!question) return;
+  const button = $("#submit");
+  button.disabled = true;
+  setStatus('<span class="spinner"></span>délibération en cours…');
+  $("#alerts").innerHTML = "";
+  $("#judge").hidden = true;
+  try {
+    const response = await fetch("/api/council", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question, rounds: Number($("#rounds").value) }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+    renderMembers(data.contributions || []);
+    const judge = $("#judge");
+    judge.innerHTML = `<h2>Réponse du conseil · juge ${escapeHtml(data.judge)}</h2>${renderMarkdown(data.answer || "")}`;
+    judge.hidden = false;
+    setStatus(`${(data.duration_ms / 1000).toFixed(1)} s · ${data.usage.total_tokens} tokens`);
+    if (data.status !== "succeeded") {
+      alert("Délibération partielle : " + (data.errors || []).join("; "), "info");
+    }
+  } catch (error) {
+    setStatus("");
+    alert(error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+$("#form").addEventListener("submit", run);
+$("#example").addEventListener("click", () => {
+  $("#question").value = "Faut-il un index SQL ou une recherche plein texte pour 50 000 documents ?";
+  $("#question").focus();
+});
+$("#question").addEventListener("keydown", (event) => {
+  if ((event.metaKey || event.ctrlKey) && event.key === "Enter") $("#form").requestSubmit();
+});
+loadProviders();
+</script>
+</body>
+</html>
