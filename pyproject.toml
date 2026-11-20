@@ -27,7 +27,7 @@ agents = "agents.cli:main"
 nexus-hlp = "nexus.server:main"
 
 [tool.setuptools.packages.find]
-include = ["agents*", "nexus*"]
+include = ["agents*", "app*", "nexus*", "standalone*"]
 
 [tool.setuptools.package-data]
 agents = ["data/corpus/*.md"]
