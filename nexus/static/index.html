@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070810">
+  <meta name="description" content="Nexus HLP.AI — une interface pour orchestrer les generateurs video IA.">
+  <title>Nexus HLP.AI — Video Intelligence Hub</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="aurora aurora-a"></div>
+  <div class="aurora aurora-b"></div>
+
+  <aside class="sidebar" aria-label="Navigation principale">
+    <a href="#create" class="brand" aria-label="Nexus HLP.AI">
+      <span class="brand-mark"><span>N</span></span>
+      <span class="brand-copy"><strong>NEXUS</strong><small>HLP.AI</small></span>
+    </a>
+
+    <nav class="nav-list">
+      <button class="nav-item active" data-view="create" type="button">
+        <span class="nav-icon">✦</span><span>Créer</span>
+      </button>
+      <button class="nav-item" data-view="library" type="button">
+        <span class="nav-icon">▦</span><span>Projets</span><span class="nav-count" id="project-count">0</span>
+      </button>
+      <button class="nav-item" data-view="engines" type="button">
+        <span class="nav-icon">⬡</span><span>Moteurs IA</span><span class="pulse-dot"></span>
+      </button>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+    <div class="mode-card">
+      <div class="mode-row"><span class="status-light"></span><strong id="mode-name">Mode démo</strong></div>
+      <p id="mode-detail">Aucune clé nécessaire. Aperçu local et gratuit.</p>
+      <button type="button" class="text-button" data-view="engines">Voir les connexions →</button>
+    </div>
+    <div class="profile-row">
+      <span class="avatar">PH</span>
+      <span><strong>Philemon</strong><small>Creator workspace</small></span>
+      <span class="online-dot"></span>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="mobile-brand" type="button" aria-label="Menu">N</button>
+      <div>
+        <p class="eyebrow" id="page-eyebrow">STUDIO UNIFIÉ</p>
+        <h1 id="page-title">Créer une vidéo</h1>
+      </div>
+      <div class="top-actions">
+        <span class="api-status"><span class="status-light"></span><span id="connector-count">1 connecteur</span></span>
+        <a class="icon-button" href="https://github.com/philemonlusamba/philemonlusamba" target="_blank" rel="noreferrer" title="Code source">↗</a>
+        <button class="primary small" id="new-project" type="button">+ Nouveau</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="view active" id="view-create">
+        <div class="hero-line">
+          <div>
+            <span class="live-badge"><i></i> NEXUS ROUTER</span>
+            <h2>Une idée. <span>Tous les moteurs.</span></h2>
+            <p>Décrivez votre scène, choisissez une intelligence vidéo et laissez Nexus orchestrer la génération.</p>
+          </div>
+          <div class="metric-strip">
+            <div><strong id="engine-total">15</strong><span>familles IA</span></div>
+            <div><strong id="completed-total">0</strong><span>rendus</span></div>
+            <div><strong>1</strong><span>interface</span></div>
+          </div>
+        </div>
+
+        <div class="studio-grid">
+          <form class="glass composer" id="generate-form">
+            <div class="section-head">
+              <div><span class="step">01</span><h3>Décrivez votre vision</h3></div>
+              <div class="mode-switch" role="group" aria-label="Type de génération">
+                <button class="selected" type="button" data-mode="text">Texte</button>
+                <button type="button" data-mode="image">Image</button>
+              </div>
+            </div>
+
+            <div class="prompt-wrap">
+              <textarea id="prompt" maxlength="2000" required placeholder="Un astronaute marche dans les rues de Kinshasa sous une pluie néon, plan cinématographique, reflets sur l'asphalte, caméra lente..."></textarea>
+              <div class="prompt-tools">
+                <span><span id="prompt-count">0</span> / 2000</span>
+                <button type="button" class="magic-button" id="enhance-prompt">✦ Améliorer</button>
+              </div>
+            </div>
+
+            <div class="image-field hidden" id="image-field">
+              <label for="image-url">Image de référence (URL publique)</label>
+              <input id="image-url" type="url" placeholder="https://exemple.com/image.jpg">
+              <small>L’image reste chez son hébergeur ; Nexus transmet seulement son URL au connecteur choisi.</small>
+            </div>
+
+            <div class="suggestions" aria-label="Exemples de prompts">
+              <button type="button" data-prompt="Une voiture futuriste traverse Kinshasa au coucher du soleil, travelling latéral cinématographique, lumière volumétrique">Ville future</button>
+              <button type="button" data-prompt="Un flacon de parfum noir sur un socle de marbre, rotation lente, éclairage studio premium, publicité de luxe">Produit premium</button>
+              <button type="button" data-prompt="Une forêt tropicale vue par un drone, brume matinale, rayons de soleil, mouvement fluide et réaliste">Nature drone</button>
+            </div>
+
+            <div class="divider"></div>
+            <div class="section-head compact"><div><span class="step">02</span><h3>Choisissez le moteur</h3></div><button type="button" class="text-button" data-view="engines">Explorer tout</button></div>
+            <div class="engine-rail" id="engine-rail" aria-label="Moteurs vidéo"></div>
+
+            <div class="divider"></div>
+            <div class="section-head compact"><div><span class="step">03</span><h3>Réglages du rendu</h3></div><button class="text-button" type="button" id="advanced-toggle">Réglages avancés +</button></div>
+            <div class="settings-grid">
+              <label>Format
+                <select id="aspect-ratio">
+                  <option value="16:9">16:9 · Paysage</option>
+                  <option value="9:16">9:16 · Vertical</option>
+                  <option value="1:1">1:1 · Carré</option>
+                  <option value="4:3">4:3 · Standard</option>
+                  <option value="3:4">3:4 · Portrait</option>
+                </select>
+              </label>
+              <label>Durée
+                <select id="duration">
+                  <option value="5">5 secondes</option>
+                  <option value="8">8 secondes</option>
+                  <option value="10">10 secondes</option>
+                  <option value="15">15 secondes</option>
+                </select>
+              </label>
+              <label>Résolution
+                <select id="resolution">
+                  <option value="720p">720p · Rapide</option>
+                  <option value="1080p">1080p · Haute qualité</option>
+                  <option value="480p">480p · Économie</option>
+                </select>
+              </label>
+              <label>Style
+                <select id="style">
+                  <option value="cinematic">Cinématique</option>
+                  <option value="photorealistic">Photoréaliste</option>
+                  <option value="anime">Anime</option>
+                  <option value="advertising">Publicité</option>
+                  <option value="documentary">Documentaire</option>
+                  <option value="3d">Animation 3D</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="advanced-panel hidden" id="advanced-panel">
+              <label>Connecteur serveur
+                <select id="connector"></select>
+                <small>« Auto » utilise une passerelle configurée, sinon la démo locale.</small>
+              </label>
+              <label>Référence du modèle
+                <input id="model-ref" type="text" maxlength="240" placeholder="owner/model ou fal-ai/model">
+              </label>
+              <label class="wide">Prompt négatif
+                <input id="negative-prompt" type="text" maxlength="1000" placeholder="flou, texte, artefacts, déformations...">
+              </label>
+              <label>Seed
+                <input id="seed" type="number" min="0" max="4294967295" placeholder="Aléatoire">
+              </label>
+              <label class="check-label"><input id="audio" type="checkbox"><span>Demander l’audio si le modèle le permet</span></label>
+            </div>
+
+            <label class="rights-check"><input id="rights" type="checkbox" required><span>Je confirme avoir les droits nécessaires sur les contenus et références utilisés.</span></label>
+
+            <button class="generate-button" id="generate-button" type="submit">
+              <span class="generate-icon">✦</span>
+              <span><strong>Générer avec Nexus</strong><small id="route-hint">Routage automatique · mode démo disponible</small></span>
+              <span class="arrow">→</span>
+            </button>
+          </form>
+
+          <aside class="studio-side">
+            <section class="glass preview-panel">
+              <div class="panel-head"><div><h3>Aperçu</h3><span id="preview-status">En attente d’une idée</span></div><button class="more-button" type="button">•••</button></div>
+              <div class="preview-stage" id="preview-stage">
+                <div class="empty-preview">
+                  <span class="orb"><i></i></span>
+                  <strong>Votre prochaine scène commence ici</strong>
+                  <p>Lancez une génération pour voir son rendu et sa progression.</p>
+                </div>
+              </div>
+              <div class="preview-actions hidden" id="preview-actions">
+                <button class="secondary" id="download-preview" type="button">↓ Exporter WebM</button>
+                <a class="primary small" id="open-result" target="_blank" rel="noreferrer">Ouvrir</a>
+              </div>
+            </section>
+
+            <section class="glass queue-panel">
+              <div class="panel-head"><div><h3>File de génération</h3><span id="queue-status">Aucune tâche active</span></div><span class="queue-dot"></span></div>
+              <div class="queue-list" id="queue-list">
+                <div class="empty-queue">Les générations actives apparaîtront ici.</div>
+              </div>
+            </section>
+
+            <section class="tip-card">
+              <span>✦</span><div><strong>Nexus Prompt Lab</strong><p>Décrivez le sujet, l’action, le décor, la lumière et le mouvement de caméra.</p></div>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-library">
+        <div class="view-heading"><div><p class="eyebrow">VOTRE ESPACE</p><h2>Projets et rendus</h2><p>Historique local des générations Nexus.</p></div><button class="primary" type="button" data-view="create">+ Créer une vidéo</button></div>
+        <div class="filter-row">
+          <button class="filter active" data-filter="all" type="button">Tous</button>
+          <button class="filter" data-filter="completed" type="button">Terminés</button>
+          <button class="filter" data-filter="running" type="button">En cours</button>
+          <button class="filter" data-filter="failed" type="button">Échecs</button>
+        </div>
+        <div class="project-grid" id="project-grid"></div>
+      </section>
+
+      <section class="view" id="view-engines">
+        <div class="view-heading"><div><p class="eyebrow">NEXUS MODEL MESH</p><h2>Écosystème vidéo IA</h2><p>Un catalogue unifié. Les accès et tarifs restent ceux de chaque fournisseur.</p></div><span class="catalog-badge" id="catalog-badge">Chargement…</span></div>
+        <div class="truth-banner"><span>i</span><p><strong>Transparence :</strong> Nexus réunit les familles dans une interface et route vers les connecteurs configurés. Il ne fournit pas gratuitement les abonnements commerciaux et ne prétend pas qu’une API non configurée est connectée.</p></div>
+        <div class="connector-grid" id="connector-grid"></div>
+        <h3 class="subheading">Familles de modèles</h3>
+        <div class="catalog-grid" id="catalog-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+  <div class="export-overlay hidden" id="export-overlay">
+    <div class="export-box"><span class="spinner"></span><strong>Encodage WebM dans votre navigateur</strong><p id="export-progress">Préparation…</p></div>
+  </div>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

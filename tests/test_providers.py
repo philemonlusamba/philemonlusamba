@@ -34,6 +34,11 @@ def test_mock_detects_role_from_system_prompt() -> None:
     assert '"tasks"' in response.text
 
 
+def test_mock_section_stops_at_marker_containing_spaces() -> None:
+    text = "[[QUESTION]]\nIndex SQL ?\n\n[[REPONSES ANONYMES]]\n### A\nautre reponse"
+    assert MockProvider._section(text, "QUESTION") == "Index SQL ?"
+
+
 def test_mock_emits_tool_call_for_maths() -> None:
     provider = MockProvider()
     messages = [

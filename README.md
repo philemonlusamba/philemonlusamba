@@ -89,6 +89,59 @@ reprend les contributions brutes ; si tous les membres échouent, le statut est
 `--models openai:gpt-4o-mini,anthropic:claude-3-5-sonnet-latest,gemini:gemini-2.0-flash`,
 et `--judge` désigne un siège distinct pour arbitrer.
 
+## Application web et fichier prêt pour VS Code
+
+Deux formats directement utilisables sont inclus :
+
+```bash
+# application web locale — ouvrir ensuite http://localhost:8000
+python app/server.py
+
+# fichier unique, copiable tel quel dans VS Code, sans installation
+python standalone/council_chat.py "Votre question"
+```
+
+- **`app/`** fournit une interface de chat, les cartes des trois membres et la
+  synthèse du juge. Sans clé, elle démarre automatiquement avec trois mocks ;
+- **`standalone/council_chat.py`** contient dans un seul fichier les clients
+  OpenAI, Anthropic et Gemini fondés sur la bibliothèque standard `urllib`.
+
+Pour activer les vrais modèles dans l'application complète :
+
+```bash
+pip install -e ".[providers]"
+export OPENAI_API_KEY=sk-...
+export ANTHROPIC_API_KEY=sk-ant-...
+export GEMINI_API_KEY=AIza...             # ou GOOGLE_API_KEY
+python app/server.py
+```
+
+Une clé manquante ne bloque pas le conseil : le siège correspondant reste
+simulé. Les clés sont lues dans l'environnement et ne sont ni envoyées au
+navigateur, ni enregistrées. Voir `app/README.md` pour l'API locale.
+
+## Nexus HLP.AI — génération vidéo multi-modèles
+
+Le dépôt inclut aussi **Nexus HLP.AI**, une application indépendante qui réunit
+les principales familles de génération vidéo dans une seule interface : Sora,
+Veo, Runway, Kling, Luma, Pika, Hailuo, Firefly, Seedance, Stable Video, Wan,
+HunyuanVideo, CogVideoX, Mochi et ComfyUI.
+
+```bash
+python -m nexus.server --port 8001
+# ouvrir http://localhost:8001
+```
+
+Sans clé, Nexus fonctionne en mode démo, produit un aperçu animé et l'exporte
+en vidéo WebM depuis le navigateur. Pour des générations réelles, les
+connecteurs serveur disponibles sont Replicate, fal.ai et un webhook normalisé
+permettant de brancher une API privée ou un workflow natif. Les abonnements et
+conditions des fournisseurs restent nécessaires : une famille affichée dans le
+catalogue n'est jamais présentée comme connectée sans configuration réelle.
+
+Voir [`nexus/README.md`](nexus/README.md) pour les variables d'environnement,
+l'API JSON, le contrat webhook et le déploiement avec `Dockerfile.nexus`.
+
 ## Le pipeline
 
 ```
@@ -128,6 +181,9 @@ et `--judge` désigne un siège distinct pour arbitrer.
 | `agents/tools/` | calcul, recherche BM25, fichiers sandboxés, texte |
 | `agents/data/corpus/` | corpus documentaire d'exemple, embarqué dans le paquet |
 | `agents/cli.py` | `run`, `council`, `plan`, `tools`, `providers` + codes de sortie stables |
+| `app/` | interface web locale et API JSON du conseil |
+| `standalone/council_chat.py` | version monofichier sans dépendance, prête pour VS Code |
+| `nexus/` | Nexus HLP.AI : studio vidéo, catalogue, connecteurs, file et export WebM |
 
 ## Démarrage rapide
 
@@ -240,7 +296,7 @@ Options principales de `run` : `--provider`, `--concurrency`, `--max-steps`,
 ## Tests et qualité
 
 ```bash
-pytest                     # 258 tests, ~1,9 s, aucun réseau requis
+pytest                     # 292 tests, ~4,4 s, aucun réseau requis
 pytest -m live             # providers réels (clé API nécessaire)
 pytest --cov=agents        # couverture : 90 %
 ruff check . && ruff format --check .

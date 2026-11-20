@@ -187,7 +187,7 @@ class MockProvider:
     @staticmethod
     def _section(text: str, key: str) -> str:
         """Contenu de la section ``[[KEY]]`` jusqu'au prochain marqueur ``[[...]]``."""
-        pattern = re.compile(rf"\[\[{re.escape(key)}\]\]\s*(.*?)(?=\[\[[A-Z_]+\]\]|\Z)", re.S)
+        pattern = re.compile(rf"\[\[{re.escape(key)}\]\]\s*(.*?)(?=\[\[[A-Z_ ]+\]\]|\Z)", re.S)
         match = pattern.search(text)
         return match.group(1).strip() if match else ""
 
