@@ -120,6 +120,28 @@ Une clé manquante ne bloque pas le conseil : le siège correspondant reste
 simulé. Les clés sont lues dans l'environnement et ne sont ni envoyées au
 navigateur, ni enregistrées. Voir `app/README.md` pour l'API locale.
 
+## Nexus HLP.AI — génération vidéo multi-modèles
+
+Le dépôt inclut aussi **Nexus HLP.AI**, une application indépendante qui réunit
+les principales familles de génération vidéo dans une seule interface : Sora,
+Veo, Runway, Kling, Luma, Pika, Hailuo, Firefly, Seedance, Stable Video, Wan,
+HunyuanVideo, CogVideoX, Mochi et ComfyUI.
+
+```bash
+python -m nexus.server --port 8001
+# ouvrir http://localhost:8001
+```
+
+Sans clé, Nexus fonctionne en mode démo, produit un aperçu animé et l'exporte
+en vidéo WebM depuis le navigateur. Pour des générations réelles, les
+connecteurs serveur disponibles sont Replicate, fal.ai et un webhook normalisé
+permettant de brancher une API privée ou un workflow natif. Les abonnements et
+conditions des fournisseurs restent nécessaires : une famille affichée dans le
+catalogue n'est jamais présentée comme connectée sans configuration réelle.
+
+Voir [`nexus/README.md`](nexus/README.md) pour les variables d'environnement,
+l'API JSON, le contrat webhook et le déploiement avec `Dockerfile.nexus`.
+
 ## Le pipeline
 
 ```
@@ -161,6 +183,7 @@ navigateur, ni enregistrées. Voir `app/README.md` pour l'API locale.
 | `agents/cli.py` | `run`, `council`, `plan`, `tools`, `providers` + codes de sortie stables |
 | `app/` | interface web locale et API JSON du conseil |
 | `standalone/council_chat.py` | version monofichier sans dépendance, prête pour VS Code |
+| `nexus/` | Nexus HLP.AI : studio vidéo, catalogue, connecteurs, file et export WebM |
 
 ## Démarrage rapide
 
@@ -273,7 +296,7 @@ Options principales de `run` : `--provider`, `--concurrency`, `--max-steps`,
 ## Tests et qualité
 
 ```bash
-pytest                     # 268 tests, ~2,9 s, aucun réseau requis
+pytest                     # 292 tests, ~4,4 s, aucun réseau requis
 pytest -m live             # providers réels (clé API nécessaire)
 pytest --cov=agents        # couverture : 90 %
 ruff check . && ruff format --check .

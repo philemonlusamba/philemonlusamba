@@ -4,7 +4,7 @@ PY ?= python3
 VENV ?= .venv
 BIN := $(VENV)/bin
 
-.PHONY: help install test test-live lint fmt cov demo council app run clean
+.PHONY: help install test test-live lint fmt cov demo council app nexus run clean
 
 help:
 	@echo "install   cree $(VENV) et installe le projet avec les dependances de dev"
@@ -16,6 +16,7 @@ help:
 	@echo "demo      run complet avec le provider mock"
 	@echo "council   deliberation ChatGPT x Claude x Gemini (mocks hors ligne)"
 	@echo "app       lance l'interface web du conseil sur http://localhost:8000"
+	@echo "nexus     lance Nexus HLP.AI sur http://localhost:8001"
 	@echo "clean     supprime caches et artefacts"
 
 install:
@@ -48,6 +49,9 @@ council:
 
 app:
 	$(PY) app/server.py
+
+nexus:
+	$(PY) -m nexus.server --port 8001
 
 clean:
 	rm -rf $(VENV) .pytest_cache .ruff_cache .coverage htmlcov dist build *.egg-info runs
